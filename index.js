@@ -43,6 +43,7 @@ form.addEventListener("submit", (e) => {
   userEntries.push(entries);
 
   localStorage.setItem("userEntries", JSON.stringify(userEntries));
+    displayTableData();
   //set to localstorage
   form.reset();
 });
