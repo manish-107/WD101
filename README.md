@@ -1,4 +1,3 @@
-# WD101-asses
 # User Registration Form
 
 1. Users can enter their name, email, password, date of birth, and accept terms & conditions.
