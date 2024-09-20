@@ -1,5 +1,5 @@
 # WD101-asses
-##User Registration Form
+# User Registration Form
 
 1. Users can enter their name, email, password, date of birth, and accept terms & conditions.
 Form validation ensures that the Date of Birth (DOB) falls between 18 and 55 years.
