@@ -1,4 +1,4 @@
-//to check dob between 18-55
+// to check dob between 18-55
 const today = new Date();
 const maxAge = 55;
 const minAge = 18;
@@ -6,7 +6,7 @@ const minAge = 18;
 const mindate = new Date(
   today.getFullYear() - maxAge,
   today.getMonth(),
-  today.getDay()
+  today.getDate()
 );
 const maxDate = new Date(
   today.getFullYear() - minAge,
@@ -18,10 +18,13 @@ const inputedDate = document.getElementById("dob");
 inputedDate.min = mindate.toISOString().split("T")[0];
 inputedDate.max = maxDate.toISOString().split("T")[0];
 
-//to get form data
+// to get form data
 const form = document.getElementById("formData");
 let userEntries = JSON.parse(localStorage.getItem("userEntries")) || [];
+
 form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
   const formData = new FormData(form);
   const dob = formData.get("dob");
   const name = formData.get("name");
@@ -29,8 +32,6 @@ form.addEventListener("submit", (e) => {
   const pass = formData.get("password");
   const terms = formData.get("terms");
   let termsBool = terms === "on";
-
-  console.log(dob, name, email, pass, terms);
 
   let entries = {
     name: name,
@@ -41,10 +42,12 @@ form.addEventListener("submit", (e) => {
   };
 
   userEntries.push(entries);
-
   localStorage.setItem("userEntries", JSON.stringify(userEntries));
-    displayTableData();
-  //set to localstorage
+
+  // Display updated table
+  displayTableData();
+
+  // Reset form after submission
   form.reset();
 });
 
@@ -85,4 +88,5 @@ const displayTableData = () => {
   tableCell.innerHTML = tableEntries;
 };
 
-displayTableData();
+// Display table when page loads
+window.onload = displayTableData;
