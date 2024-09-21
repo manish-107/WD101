@@ -1,4 +1,4 @@
-// to check dob between 18-55
+// Set the minimum and maximum date of birth (between 18 and 55 years old)
 const today = new Date();
 const maxAge = 55;
 const minAge = 18;
@@ -14,26 +14,72 @@ const maxDate = new Date(
   today.getDate()
 );
 
-const inputedDate = document.getElementById("dob");
-inputedDate.min = mindate.toISOString().split("T")[0];
-inputedDate.max = maxDate.toISOString().split("T")[0];
+// Set the min and max attributes for the date input (DOB field)
+const dobInput = document.getElementById("dob");
+dobInput.min = mindate.toISOString().split("T")[0];
+dobInput.max = maxDate.toISOString().split("T")[0];
 
-// to get form data
+// Retrieve entries from localStorage
+const retieveEntries = () => {
+  let entries = localStorage.getItem("userEntries");
+  if (entries) {
+    entries = JSON.parse(entries);
+  } else {
+    entries = [];
+  }
+  return entries;
+};
+
+// Display entries in the table format
+const displayEntries = () => {
+  let entries = retieveEntries();
+
+  const tableEntries = entries
+    .map((entry) => {
+      const nameCell = `<td class='border px-4 py-2'>${entry.name}</td>`;
+      const emailCell = `<td class='border px-4 py-2'>${entry.email}</td>`;
+      const passwordCell = `<td class='border px-4 py-2'>${entry.password}</td>`;
+      const dobCell = `<td class='border px-4 py-2'>${entry.dob}</td>`;
+      const acceptTermsCell = `<td class='border px-4 py-2'>${
+        entry.terms ? "true" : "false"
+      }</td>`; // Shows true/false
+
+      const row = `<tr>${nameCell}${emailCell}${passwordCell}${dobCell}${acceptTermsCell}</tr>`;
+      return row;
+    })
+    .join("\n");
+
+  const table = `
+        <table class='table-auto w-full'>
+            <tr>
+                <th class='px-4 py-2'>Name</th>
+                <th class='px-4 py-2'>Email</th>
+                <th class='px-4 py-2'>Password</th>
+                <th class='px-4 py-2'>Dob</th>
+                <th class='px-4 py-2'>Accepted terms?</th>
+            </tr>
+            ${tableEntries}
+        </table>
+    `;
+
+  let details = document.getElementById("user-entries");
+  details.innerHTML = table;
+};
+
+// Handle form submission and display entries
 const form = document.getElementById("formData");
 let userEntries = JSON.parse(localStorage.getItem("userEntries")) || [];
-
 form.addEventListener("submit", (e) => {
-  e.preventDefault();
-
+  e.preventDefault(); // Prevent page reload
   const formData = new FormData(form);
   const dob = formData.get("dob");
   const name = formData.get("name");
   const email = formData.get("email");
   const pass = formData.get("password");
   const terms = formData.get("terms");
-  let termsBool = terms === "on";
+  let termsBool = terms === "on" ? true : false;
 
-  let entries = {
+  let entry = {
     name: name,
     email: email,
     password: pass,
@@ -41,52 +87,11 @@ form.addEventListener("submit", (e) => {
     terms: termsBool,
   };
 
-  userEntries.push(entries);
+  userEntries.push(entry);
   localStorage.setItem("userEntries", JSON.stringify(userEntries));
-
-  // Display updated table
-  displayTableData();
-
-  // Reset form after submission
+  displayEntries(); // Update the table immediately
   form.reset();
 });
 
-const getDataFromlocal = () => {
-  let entries = localStorage.getItem("userEntries");
-  if (entries) {
-    entries = JSON.parse(entries);
-  } else {
-    return [];
-  }
-  return entries;
-};
-
-const displayTableData = () => {
-  const tableCell = document.getElementById("tableData");
-  const entries = getDataFromlocal();
-
-  if (entries.length === 0) {
-    tableCell.innerHTML = `<tr><td colspan="5" class="border px-4 py-2 text-center">No data available</td></tr>`;
-    return;
-  }
-
-  const tableEntries = entries
-    .map((entry) => {
-      const nameCell = `<td class="border px-4 py-2">${entry.name}</td>`;
-      const emailCell = `<td class="border px-4 py-2">${entry.email}</td>`;
-      const passCell = `<td class="border px-4 py-2">${entry.password}</td>`;
-      const dobCell = `<td class="border px-4 py-2">${entry.dob}</td>`;
-      const termsCell = `<td class="border px-4 py-2">${
-        entry.terms ? "Accepted" : "Rejected"
-      }</td>`;
-
-      const row = `<tr>${nameCell}${emailCell}${passCell}${dobCell}${termsCell}</tr>`;
-      return row;
-    })
-    .join("\n");
-
-  tableCell.innerHTML = tableEntries;
-};
-
-// Display table when page loads
-window.onload = displayTableData;
+// Display the data on page load
+displayEntries();
